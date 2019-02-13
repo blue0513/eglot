@@ -177,6 +177,16 @@ let the buffer grow forever."
   :type '(choice (const :tag "No limit" nil)
                  (integer :tag "Number of characters")))
 
+(defcustom eglot-enable-completion-at-point t
+  "Enable eglot-completion-at-point.
+If t, add hook on `completion-at-point-functions'."
+  :type 'boolean)
+
+(defcustom eglot-enable-xref-backend t
+  "Enable eglot-xref-backend.
+If t, add hook on `xref-backend-functions'."
+  :type 'boolean)
+
 
 ;;; Constants
 ;;;
@@ -1158,8 +1168,10 @@ and just return it.  PROMPT shouldn't end with a question mark."
     (add-hook 'before-revert-hook 'eglot--signal-textDocument/didClose nil t)
     (add-hook 'before-save-hook 'eglot--signal-textDocument/willSave nil t)
     (add-hook 'after-save-hook 'eglot--signal-textDocument/didSave nil t)
-    (add-hook 'xref-backend-functions 'eglot-xref-backend nil t)
-    (add-hook 'completion-at-point-functions #'eglot-completion-at-point nil t)
+    (if eglot-enable-xref-backend
+	(add-hook 'xref-backend-functions 'eglot-xref-backend nil t))
+    (if eglot-enable-completion-at-point
+	(add-hook 'completion-at-point-functions #'eglot-completion-at-point nil t))
     (add-hook 'change-major-mode-hook 'eglot--managed-mode-onoff nil t)
     (add-hook 'post-self-insert-hook 'eglot--post-self-insert-hook nil t)
     (add-hook 'pre-command-hook 'eglot--pre-command-hook nil t)
